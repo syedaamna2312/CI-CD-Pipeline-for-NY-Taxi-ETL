@@ -107,5 +107,6 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/taxi-loader:latest
-            ghcr.io/${{ github.repository }}/taxi-loader:${{ github.sha }}
+    
+              ghcr.io/syedaamna2312/ci-cd-pipeline-for-ny-taxi-etl/taxi-loader:latest
+              ghcr.io/syedaamna2312/ci-cd-pipeline-for-ny-taxi-etl/taxi-loader:${{ github.sha }}
