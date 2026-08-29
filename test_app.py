@@ -57,3 +57,34 @@ def test_get_engine_uses_env_vars(monkeypatch):
 
     engine = app.get_engine()
     assert str(engine.url) == 'postgresql+psycopg2://testuser:***@testhost:5555/testdb'
+
+def test_transform_chunk_raises_when_integer_column_missing():
+    chunk = pd.DataFrame({
+        'VendorID': [1, 2],
+        'passenger_count': [1, 2],
+        'payment_type': [1, 2],
+        # RatecodeID is missing
+    })
+
+    with pytest.raises(ValueError):
+        app.transform_chunk(chunk)
+
+def test_transform_chunk_raises_for_empty_dataframe_without_columns():
+    chunk = pd.DataFrame()
+
+    with pytest.raises(ValueError):
+        app.transform_chunk(chunk)
+
+
+def test_transform_chunk_handles_negative_trip_distance():
+    chunk = pd.DataFrame({
+        'VendorID': [1, 2],
+        'passenger_count': [1, 2],
+        'RatecodeID': [1, 1],
+        'payment_type': [1, 2],
+        'trip_distance': [2.5, -1.0],
+    })
+
+    result = app.transform_chunk(chunk)
+
+    assert result.loc[1, 'trip_distance'] == -1.0
